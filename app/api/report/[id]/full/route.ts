@@ -2,33 +2,134 @@ import { NextResponse } from 'next/server';
 import { getReportById, saveFullReport } from '@/lib/db/reports';
 import { generateFullReport } from '@/lib/llm/generateFullReport';
 import { isDemoMode } from '@/lib/demo';
-import { getFullReportFallback } from '@/lib/mock/fullReportFallback';
-import { getLocalReportById, saveLocalFullReport, unlockLocalReport } from '@/lib/db/localReports';
 
 export async function POST(_: Request, context: { params: Promise<{ id: string }> }) {
   const { id } = await context.params;
   const demoMode = isDemoMode();
-  const report = demoMode ? await getLocalReportById(id) : await getReportById(id);
-  if (!report) return NextResponse.json({ error: 'Report not found' }, { status: 404 });
-
-  if (report.status === 'preview_ready' && demoMode) {
-    await unlockLocalReport(id);
-  }
 
   if (demoMode) {
-    if (report.full_json) {
-      return NextResponse.json({ report, unlocked: true, demoMode: true });
-    }
+    const report = {
+      id,
+      status: 'full_ready',
+      preview_json: {
+        match_score: 82,
+        match_band: 'Strong',
+        summary_verdict:
+          'This demo candidate looks broadly aligned with the role. The clearest gains would come from sharper quantified achievements, cleaner role targeting, and tighter interview examples.',
+        top_strengths: [
+          'Relevant experience is visible early',
+          'Clear delivery and stakeholder themes',
+          'Enough substance for strong STAR stories',
+        ],
+        top_gaps: [
+          'Bullets need more measurable outcomes',
+          'Role-specific keywords are still light',
+          'Summary could signal fit faster',
+        ],
+        cv_rewrites: [
+          {
+            section: 'Professional Summary',
+            issue: 'The opening does not show fit quickly enough',
+            original:
+              'Experienced professional with a background in collaborative delivery roles.',
+            rewrite:
+              'Outcome-focused professional with experience delivering cross-functional work, improving execution quality, and communicating clearly with stakeholders in fast-moving teams.',
+            reason:
+              'This version is more specific, more employer-facing, and signals relevance sooner.',
+          },
+        ],
+        interview_questions: [
+          {
+            question:
+              'Tell me about a time you improved a process that was slowing the team down.',
+            why_likely: 'The role signals ownership and operational judgement.',
+            answer_framework: ['Situation', 'Problem', 'Action', 'Result'],
+            risk_level: 'standard',
+          },
+        ],
+      },
+      full_json: {
+        job_requirements: {
+          must_have: [
+            'Relevant functional experience',
+            'Stakeholder communication',
+            'Problem solving',
+            'Execution under deadlines',
+          ],
+          nice_to_have: [
+            'Leadership exposure',
+            'Process improvement',
+            'Industry tooling familiarity',
+          ],
+          seniority_cues: ['Ownership of workstreams', 'Cross-functional influence'],
+          hidden_expectations: ['Clear written communication', 'Commercial awareness'],
+        },
+        cv_critique: {
+          strongest_areas: [
+            'Readable career history',
+            'Clear role progression',
+            'Transferable experience is present',
+          ],
+          weakest_areas: [
+            'Impact metrics are too light',
+            'Summary is generic',
+            'Skills section is not tailored enough',
+          ],
+          missing_evidence: ['More quantified outcomes', 'Stronger examples of ownership'],
+          weak_phrasing: ['Responsible for', 'Helped with'],
+        },
+        keyword_gaps: [
+          'stakeholder management',
+          'project delivery',
+          'cross-functional collaboration',
+          'prioritisation',
+          'process improvement',
+          'commercial awareness',
+        ],
+        ats_notes: [
+          'Mirror the target job title in your summary',
+          'Use exact keyword phrasing from the job description where truthful',
+          'Lead bullets with action and end with outcome',
+        ],
+        questions_to_ask: [
+          'What does success look like in the first 90 days?',
+          'What are the biggest priorities for this role this quarter?',
+          'How does the team measure strong performance?',
+          'What usually separates strong candidates from average ones here?',
+        ],
+        action_plan: {
+          fix_now: [
+            'Rewrite the summary for the exact target role',
+            'Add measurable outcomes to recent bullets',
+            'Tighten the skills section around the job description',
+          ],
+          fix_today: [
+            'Prepare two strong STAR examples',
+            'Refine answers for stakeholder and prioritisation questions',
+            'Tailor headline language to the target role',
+          ],
+          fix_this_week: [
+            'Run another role-specific mock application review',
+            'Improve LinkedIn headline and summary to match',
+            'Build a stronger quantified evidence bank',
+          ],
+        },
+      },
+    };
 
-    const full = getFullReportFallback(report);
-    const saved = await saveLocalFullReport(id, full);
-    return NextResponse.json({ report: saved, unlocked: true, demoMode: true });
+    return NextResponse.json({ report, unlocked: true, demoMode: true });
   }
 
   const refreshed = await getReportById(id);
-  if (!refreshed) return NextResponse.json({ error: 'Report not found' }, { status: 404 });
-  if (!demoMode && refreshed.status !== 'paid' && refreshed.status !== 'full_ready') {
-    return NextResponse.json({ error: 'Payment required before full report generation' }, { status: 402 });
+  if (!refreshed) {
+    return NextResponse.json({ error: 'Report not found' }, { status: 404 });
+  }
+
+  if (refreshed.status !== 'paid' && refreshed.status !== 'full_ready') {
+    return NextResponse.json(
+      { error: 'Payment required before full report generation' },
+      { status: 402 }
+    );
   }
 
   if (refreshed.full_json) {
@@ -37,5 +138,6 @@ export async function POST(_: Request, context: { params: Promise<{ id: string }
 
   const full = await generateFullReport(refreshed);
   const saved = await saveFullReport(id, full);
+
   return NextResponse.json({ report: saved, unlocked: true });
 }

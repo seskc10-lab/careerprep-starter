@@ -5,26 +5,25 @@ import { createPreviewReport } from '@/lib/db/reports';
 import { getOptionalUserFromRequest } from '@/lib/utils/auth';
 import { upsertProfile } from '@/lib/db/profiles';
 import { isDemoMode } from '@/lib/demo';
-import { saveLocalPreviewReport } from '@/lib/db/localReports';
 
 export async function POST(request: Request) {
   try {
     const body = await request.json();
     const input = intakeSchema.parse(body);
     const user = isDemoMode() ? null : await getOptionalUserFromRequest(request);
-    if (user && !isDemoMode()) await upsertProfile(user.id, input.profile);
+
+    if (user && !isDemoMode()) {
+      await upsertProfile(user.id, input.profile);
+    }
+
     const preview = await generatePreview(input);
+
     if (isDemoMode()) {
-      const report = await saveLocalPreviewReport({
-        userId: user?.id,
-        ownerEmail: input.profile.email,
-        cvText: input.cvText,
-        jobDescription: input.jobDescription,
-        companyName: input.company,
-        interviewDate: input.interviewDate,
+      return NextResponse.json({
+        reportId: 'demo-report-001',
         preview,
+        storage: 'demo',
       });
-      return NextResponse.json({ reportId: report.id, preview: report.preview_json, storage: 'local' });
     }
 
     const result = await createPreviewReport({
@@ -36,8 +35,16 @@ export async function POST(request: Request) {
       interviewDate: input.interviewDate,
       preview,
     });
-    return NextResponse.json({ reportId: result.report.id, preview: result.report.preview_json, storage: result.storage });
+
+    return NextResponse.json({
+      reportId: result.report.id,
+      preview: result.report.preview_json,
+      storage: result.storage,
+    });
   } catch (error) {
-    return NextResponse.json({ error: error instanceof Error ? error.message : 'Preview generation failed' }, { status: 500 });
+    return NextResponse.json(
+      { error: error instanceof Error ? error.message : 'Preview generation failed' },
+      { status: 500 }
+    );
   }
 }
