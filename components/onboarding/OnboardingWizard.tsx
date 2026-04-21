@@ -14,10 +14,10 @@ export function OnboardingWizard({ onComplete }: { onComplete: (profile: Onboard
   const [profile, setProfile] = useState<OnboardingProfile>({
   name: 'Alex Morgan',
   email: 'alex.morgan@example.com',
-  stage: '',
-  targetRole: '',
-  experience: '',
-  struggle: '',
+  stage: 'Applying now',
+targetRole: 'Product Manager',
+experience: 'Mid-level (3–7 yrs)',
+struggle: 'Weak CV',
 });
 
   const update = (key: keyof OnboardingProfile, value: string) => setProfile((prev) => ({ ...prev, [key]: value }));
