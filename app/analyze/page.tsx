@@ -15,7 +15,7 @@ import { InterviewPreviewCard } from '@/components/preview/InterviewPreviewCard'
 import { UpsellPanel } from '@/components/preview/UpsellPanel';
 import { CheckoutCard } from '@/components/paywall/CheckoutCard';
 import { Button } from '@/components/shared/Button';
-import 
+import { ErrorBanner } from '@/components/shared/ErrorBanner';
 import { apiFetch } from '@/lib/api/client';
 import type { OnboardingProfile } from '@/types/onboarding';
 import type { PreviewResponse } from '@/types/api';
