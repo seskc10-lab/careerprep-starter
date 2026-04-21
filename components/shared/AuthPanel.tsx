@@ -17,7 +17,7 @@ export function AuthPanel() {
   }, [supabase]);
 
   if (!supabase) {
-    return return <div className="notice info">Demo mode: you are viewing a sample interview-prep experience.</div>;
+    return <div className="notice info">Demo mode: you are viewing a sample interview-prep experience.</div>;
   }
 
   async function signUp() {
