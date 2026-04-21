@@ -17,7 +17,7 @@ export function AuthPanel() {
   }, [supabase]);
 
   if (!supabase) {
-    return <div className="notice info">Supabase is not configured. You can still test the product in local preview mode.</div>;
+    return return <div className="notice info">Demo mode: you are viewing a sample interview-prep experience.</div>;
   }
 
   async function signUp() {
