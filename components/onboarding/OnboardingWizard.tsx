@@ -11,7 +11,14 @@ const ROLES = ['Software Engineer', 'Product Manager', 'UX / Product Designer', 
 
 export function OnboardingWizard({ onComplete }: { onComplete: (profile: OnboardingProfile) => void }) {
   const [step, setStep] = useState(1);
-  const [profile, setProfile] = useState<OnboardingProfile>({ name: '', email: '', stage: '', targetRole: '', experience: '', struggle: '' });
+  const [profile, setProfile] = useState<OnboardingProfile>({
+  name: 'Alex Morgan',
+  email: 'alex.morgan@example.com',
+  stage: '',
+  targetRole: '',
+  experience: '',
+  struggle: '',
+});
 
   const update = (key: keyof OnboardingProfile, value: string) => setProfile((prev) => ({ ...prev, [key]: value }));
 
