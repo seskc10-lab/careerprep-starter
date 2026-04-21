@@ -24,45 +24,17 @@ import type { Report } from '@/types/report';
 export default function AnalyzePage() {
   const [stage, setStage] = useState<'onboarding' | 'input' | 'processing' | 'preview' | 'paywall'>('onboarding');
   const [profile, setProfile] = useState<OnboardingProfile | null>(null);
-  const [cvText, setCvText] = useState(`Alex Morgan
-Product Manager
 
-Summary
-Product manager with 5 years of experience leading cross-functional teams, improving customer journeys, and shipping digital products in fast-moving environments.
+  const [cvText, setCvText] = useState(
+    'Alex Morgan - Product Manager with 5 years of experience leading cross-functional teams, improving onboarding, retention, and internal workflows.'
+  );
 
-Experience
-Senior Product Manager | Northstar Digital | 2022–Present
-- Led roadmap prioritisation across onboarding and retention flows
-- Partnered with design, engineering, and operations to launch process improvements
-- Increased activation by 18% through funnel redesign and clearer user journeys
+  const [jobDescription, setJobDescription] = useState(
+    'Product Manager role focused on onboarding, internal tooling, process improvement, stakeholder communication, prioritisation, and measurable business outcomes.'
+  );
 
-Product Manager | Brightloop | 2020–2022
-- Owned discovery and delivery for internal workflow tools
-- Reduced manual operational effort by introducing better process tracking
-- Improved stakeholder reporting cadence and visibility across teams
-
-Skills
-Product strategy, stakeholder management, roadmap planning, process improvement, analytics, cross-functional leadership`);
-
-const [jobDescription, setJobDescription] = useState(`Product Manager
-
-We are looking for a product manager to lead initiatives across customer onboarding, internal tooling, and operational workflow improvement. You will work closely with design, engineering, and commercial stakeholders to identify priorities, improve processes, and deliver measurable business outcomes.
-
-Key responsibilities:
-- Own roadmap planning and prioritisation
-- Improve internal and customer-facing processes
-- Work cross-functionally with stakeholders across the business
-- Translate business needs into clear product requirements
-- Use data to identify opportunities and measure success
-
-Requirements:
-- Experience in product management
-- Strong stakeholder communication
-- Comfort working in fast-paced environments
-- Ability to improve ambiguous or inefficient processes`);
-
-const [company, setCompany] = useState('Northstar Advisory');
-const [interviewDate, setInterviewDate] = useState('25 April 2026'); 
+  const [company, setCompany] = useState('Northstar Advisory');
+  const [interviewDate, setInterviewDate] = useState('25 April 2026');
   const [reportId, setReportId] = useState<string>('');
   const [preview, setPreview] = useState<Partial<Report> | null>(null);
   const [error, setError] = useState<string | null>(null);
