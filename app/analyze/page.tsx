@@ -73,7 +73,7 @@ export default function AnalyzePage() {
       <div className="wrap" style={{ padding: '28px 24px 56px' }}>
         <AuthPanel />
         {stage === 'onboarding' && <OnboardingWizard onComplete={(data) => { setProfile(data); setStage('input'); }} />}
-      {stage === 'input' && (
+    {stage === 'input' && (
   <>
     <ErrorBanner message={error} />
 
